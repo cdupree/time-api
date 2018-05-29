@@ -5,7 +5,9 @@ import (
 //        "io"
         "io/ioutil"
         "log"
+        "net"
         "net/http"
+        "net/url"
         "os"
         "strconv"
         "strings"
@@ -26,12 +28,31 @@ func main() {
         fmt.Fprintf(os.Stderr, "delay between probes is %d ns\n", int(delay))
 
         for true {
-            go probe(os.Args[2])
+            go tcp_probe(os.Args[2])
             time.Sleep(time.Duration(delay))
 
         }
 }
 
+func tcp_probe(ip string) {
+    u, _ := url.Parse(ip)
+
+    fmt.Println(u.Host)
+    fmt.Println(u.Path)
+
+    tcpAddr, _ := net.ResolveTCPAddr("tcp4", fmt.Sprintf("%s:80", u.Host))
+
+    conn, _ := net.DialTCP("tcp", nil, tcpAddr)
+
+    start := time.Now()
+    _, _ = conn.Write([]byte(fmt.Sprintf("GET %s HTTP/1.0\r\n\r\n", u.Path)))
+    result, _ := ioutil.ReadAll(conn)
+    stop := time.Now()
+
+    elapsed := stop.Sub(start)
+
+    fmt.Fprintf(os.Stdout, "\n**\nTTLB: %d \nBODY: %s\n", elapsed.Nanoseconds() / 1e6, string(result))
+}
 
 func probe(url string) {
         start := time.Now()
