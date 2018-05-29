@@ -1,0 +1,34 @@
+* environment setup: Docker built from go
+* run using
+
+docker run -it -v `pwd`:/go/src/github/cdupree/time-api -w /go/src/github/cdupree/time-api -p 8000 go
+
+so now we can develop locally (ie, outside the image)
+
+* develop main.go stub, and we can run now curl fro outside the image, but
+  we get a 404 with
+
+  /datetime
+
+  because we have not yet written the code for that endpoint, or registered
+  it. (commit: c7fbf70d6a788c6ad1b2a32dcc7594e2c8c52ad0)
+
+* add stub for datetime getter 
+
+74094025922cdb08ac4c28243b4a788c03f3a50e
+
+Now we at leat get 200 OK as a return code, but an empty body.
+
+So now it's time to flesh out the server.
+
+* add imoprt to get the time object. This has both the current UTC (since
+  container is using UTC as /etc/timezone) time, and also a timer which 
+  monotonically increases from the moment that that the program begins. 
+  This will be useful for the client, too.
+
+
+
+
+
+
+

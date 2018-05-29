@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker run -it -v `pwd`:/go/src/github/cdupree/time-api -w /go/src/github/cdupree/time-api -p 8000:8000 --name=www --rm go
+
